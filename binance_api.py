@@ -1,5 +1,4 @@
 import asyncio
-import json
 import numpy as np
 import os
 
@@ -13,7 +12,8 @@ Other Predictors that can be added later for better predictions:
 - Historical Data, Fundamental Analysis, Sentiment Analysis, and Broader Market Data
 '''
 
-binace_api_key = os.getenv('BINANCE_KEY')
+binace_api_key = os.getenv('BINANCE_API_KEY')
+binance_secret_key = os.getenv('BINANCE_SECRET_KEY')
 
 def calculate_SimpleMovingAverage(prices, interval):
     return sum(prices) / interval
@@ -39,8 +39,8 @@ def calculate_RelativeStrength(prices, period):
     rsi = 100 - (100 / (1 + rs)) #initial RSI value
 
     # Get rest of RSI values
-    rsi_values = [rsi]
-    rs_values = [rs]
+    rsi_values = [float(rsi)]
+    rs_values = [float(rs)]
 
     for i in range(period, len(prices) - 1):
 
@@ -54,29 +54,46 @@ def calculate_RelativeStrength(prices, period):
 
         rsi = 100 - (100 / (1 + rs))
 
-        rsi_values.append(rsi)
-        rs_values.append(rs)
+        rsi_values.append(float(rsi))
+        rs_values.append(float(rs))
     
     return rsi_values, rs_values
 
 def calculate_VolumeWeightedAveragePrice(quote_volume, volume):
-    return quote_volume / volume 
+    return sum(quote_volume) / sum(volume) 
 
-async def main():
+async def get_info():
 
-    client = AsyncClient.create()
+    client = await AsyncClient.create(binance_secret_key, binace_api_key, tld='us')
 
-    symbol = input("Enter the coin you'd like information for: ") # Temporary until other API set
+    symbol = str(input("Enter the coin you'd like information for: ")) # Temporary until other API set
 
-    tick_data = await client.get_ticker(symbol) # 24-hour period
-    latest_price = await client.get_symbol_ticker(symbol)
-    candlesticks = await client.get_klines(symbol, "1h")
-    order_book = await client.get_order_book(symbol)
+    tick_data = await client.get_ticker(symbol=symbol) # 24-hour period
+    candlesticks = await client.get_klines(symbol=symbol, interval="1h")
+    order_book = await client.get_order_book(symbol=symbol) 
 
-    sma = calculate_SimpleMovingAverage(candlesticks['close', 60])
-    rsi, rs = calculate_RelativeStrength(candlesticks['close'], 14)
-    vwap = calculate_VolumeWeightedAveragePrice(tick_data['quote_volume'], tick_data['volume'])
+    prices = []
+    volume = []
+    quote_volume=[]
+    for candle in candlesticks:
+        prices.append(float(candle[4]))
+        volume.append(float(candle[5]))
+        quote_volume.append(float(candle[7]))
 
-    print(tick_data, latest_price, candlesticks, order_book, sma, rsi, rs, vwap)
 
+    sma = calculate_SimpleMovingAverage(prices, 60)
+    rsi, rs = calculate_RelativeStrength(prices, 14)
+    vwap = calculate_VolumeWeightedAveragePrice(quote_volume, volume)
+
+    print(tick_data)
+    print(order_book)
+    print(sma)
+    print(rsi)
+    print(rs)
+    print(vwap)
+
+    await client.close_connection()
+
+
+asyncio.run(get_info())
 
