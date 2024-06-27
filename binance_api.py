@@ -1,8 +1,7 @@
-import asyncio
 import numpy as np
 import os
 
-from binance import AsyncClient, DepthCacheManager, BinanceSocketManager
+from binance import AsyncClient
 
 '''
 Minimum factors required to make a prediction of a coin are : 
@@ -62,11 +61,9 @@ def calculate_RelativeStrength(prices, period):
 def calculate_VolumeWeightedAveragePrice(quote_volume, volume):
     return sum(quote_volume) / sum(volume) 
 
-async def get_info():
+async def get_info(symbol):
 
     client = await AsyncClient.create(binance_secret_key, binace_api_key, tld='us')
-
-    symbol = str(input("Enter the coin you'd like information for: ")) # Temporary until other API set
 
     tick_data = await client.get_ticker(symbol=symbol) # 24-hour period
     candlesticks = await client.get_klines(symbol=symbol, interval="1h")
@@ -85,15 +82,9 @@ async def get_info():
     rsi, rs = calculate_RelativeStrength(prices, 14)
     vwap = calculate_VolumeWeightedAveragePrice(quote_volume, volume)
 
-    print(tick_data)
-    print(order_book)
-    print(sma)
-    print(rsi)
-    print(rs)
-    print(vwap)
-
     await client.close_connection()
 
+    return tick_data, sma, rs, rsi, vwap, order_book
 
-asyncio.run(get_info())
+
 

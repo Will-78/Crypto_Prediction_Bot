@@ -21,8 +21,7 @@ def create_db():
     c.execute('''CREATE TABLE IF NOT EXISTS currencies
                 (
                  crypto_id AUTOINCREMENT UNIQUE INTEGER PRIMARY KEY,
-                 symbol TEXT,
-                 name TEXT
+                 symbol TEXT
                 )''')
     
     conn.commit()
@@ -44,12 +43,21 @@ def cache_prediction(crypto_id, response):
     conn.commit()
     conn.close()
 
-def insert_currency(symbol, name):
+def insert_currency(symbol):
     conn = sqlite3.connect('crypto_trading.db')
     c = conn.cursor()
-    c.execute("INSERT INTO currencies(symbol, name) VALUES(?, ?)",
-              (symbol, name))
+    c.execute("INSERT INTO currencies(symbol) VALUES(?)",
+              (symbol))
     c.commit()
     c.close()
 
+def fetch_currency(symbol):
+    conn = sqlite3.connect('crypto-trading.db')
+    c = conn.cursor()
+    c.execute("SELECT crypto_id FROM currencies WHERE symbol = ?", (symbol))
+
+    crypto_id = c.fetchOne()
+
+    c.close()
+    return crypto_id
 

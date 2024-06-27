@@ -8,6 +8,22 @@ my_api_key = os.getenv('OPENAI_KEY')
 openai.api_key = my_api_key
 
 # WRITE YOUR CODE HERE
+def get_sentiment(text):
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=f"Analyze the sentiment of the following text: {text}",
+        max_tokens=60
+    )
+    sentiment = response.choices[0].text.strip()
+    return sentiment
+
+def make_decision(sentiment):
+    if 'positive' in sentiment.lower():
+        return 'BUY'
+    elif 'negative' in sentiment.lower():
+        return 'SELL'
+    else:
+        return 'HOLD'
 
 # Create an OpenAPI client using the key from our environment variable
 client = OpenAI(
