@@ -11,10 +11,14 @@
     * pip install python-binance
     * pip install openai
     * pip install numpy
+    * pip install praw
+
 * Set up env keys
     * export OPENAI_KEY="<KEY>"
     * export BINANCE_AI="<KEY>"
 
 ## Potential Issues
-
+* Region Availability 
+    * Regions requiring a different ts
+    * Not all states within the US have acess to this API resource
 
