@@ -1,7 +1,7 @@
 # Outline for SQL data base
 import sqlite3
 
-def create_db():
+async def create_db():
     conn = sqlite3.connect('crypto_trading.db')
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS posts
@@ -12,22 +12,24 @@ def create_db():
     
     c.execute('''CREATE TABLE IF NOT EXISTS predictions
                 (
-                    prediction_id AUTOINCREMENT UNIQUE INTEGER PRIMARY KEY,
-                    crypto_id UNIQUE INTEGER,
-                    time_stamp TEXT DEFAULT GETDATE(),
-                     response TEXT
+                    prediction_id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+                    crypto_id INTEGER UNIQUE,
+                    time_stamp TEXT DEFAULT CURRENT_TIMESTAMP,
+                    response TEXT
                 )''')
     
     c.execute('''CREATE TABLE IF NOT EXISTS currencies
                 (
-                 crypto_id AUTOINCREMENT UNIQUE INTEGER PRIMARY KEY,
+                 crypto_id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
                  symbol TEXT
                 )''')
     
     conn.commit()
     conn.close()
 
-def insert_post(post_id, title, sentiment):
+    print("success")
+
+async def insert_post(post_id, title, sentiment):
     conn = sqlite3.connect('crypto_trading.db')
     c = conn.cursor()
     c.execute("INSERT INTO posts (id, title, sentiment) VALUES (?, ?, ?)",
@@ -35,7 +37,7 @@ def insert_post(post_id, title, sentiment):
     conn.commit()
     conn.close()
 
-def cache_prediction(crypto_id, response):
+async def cache_prediction(crypto_id, response):
     conn = sqlite3.connect('crypto_trading.db')
     c = conn.cursor()
     c.excute("INSERT INTO predictions(crypto_id, response) VALUES(?, ?)",
@@ -43,21 +45,33 @@ def cache_prediction(crypto_id, response):
     conn.commit()
     conn.close()
 
-def insert_currency(symbol):
+async def insert_currency(symbol):
     conn = sqlite3.connect('crypto_trading.db')
     c = conn.cursor()
     c.execute("INSERT INTO currencies(symbol) VALUES(?)",
               (symbol))
     c.commit()
-    c.close()
+    conn.close()
 
-def fetch_currency(symbol):
+async def fetch_currency(symbol):
     conn = sqlite3.connect('crypto-trading.db')
     c = conn.cursor()
-    c.execute("SELECT crypto_id FROM currencies WHERE symbol = ?", (symbol))
+    c.execute("SELECT crypto_id FROM currencies WHERE symbol = ?", (symbol,))
 
     crypto_id = c.fetchOne()
 
-    c.close()
+    conn.close()
     return crypto_id
 
+async def fetch_prediction(crypto_id):
+    conn = sqlite3.connect('crypto-trading.db')
+    c = conn.cursor()
+    c.execute('''SELECT time_stamp, response
+                 FROM predictions
+                 WHERE crypto_id = ? ''',
+                 (crypto_id,))
+    
+    timestamps, responses = c.fetchall()
+
+    conn.close()
+    return timestamps, responses

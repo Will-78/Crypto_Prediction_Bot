@@ -39,10 +39,12 @@ async def main():
         tick_data, sma, rs, rsi, vwap, book_order = await get_info(ticker + 'USDT')  # assuming USDT pair for simplicity
 
         sentiment = get_sentiment(ticker)
-        decision = make_decision(tick_data, sma, rs, rsi, vwap, book_order, sentiment)
+        decision = make_decision(tick_data, sma, rs, rsi, vwap, book_order)
         cache_prediction(crypto_id, decision)
     
-        print(f"Ticker: {result[0]}, Current Price: {result[1]}, Decision: {result[2]}")
+        print(f"{decision}\n")
+    
+    
 
 if __name__ == '__main__':
     asyncio.run(main())

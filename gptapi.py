@@ -1,6 +1,5 @@
 import os 
 import openai
-from openai import OpenAI
 
 # Set environment variables
 my_api_key = os.getenv('OPENAI_KEY')
@@ -17,25 +16,16 @@ def get_sentiment(text):
     sentiment = response.choices[0].text.strip()
     return sentiment
 
-def make_decision(sentiment):
-    if 'positive' in sentiment.lower():
-        return 'BUY'
-    elif 'negative' in sentiment.lower():
-        return 'SELL'
-    else:
-        return 'HOLD'
+def make_decision(tick_data, sma, rs, rsi, vwap, book_order):
+    completion = openai.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a crypto specialist and can make crypto suggestions off data retrieved from Binance"},
+            {"role": "user", "content": f"Based off this information provided make a suggested plan of action like selling, holding, or buying:" 
+                                        f"tick data: {tick_data}, simple moving average: {sma}, relative strength: {rs}, relative strength index: {rsi},"
+                                        f"volume weighted average price: {vwap}, book order: {book_order}"}
+        ]
+    )
 
-# Create an OpenAPI client using the key from our environment variable
-client = OpenAI(
-    api_key=my_api_key,
-)
+    return completion.choices[0].message.content
 
-# Specify the model to use and the messages to send
-completion = client.chat.completions.create(
-    model="gpt-3.5-turbo",
-    messages=[
-        {"role": "system", "content": "You are a university instructor and can explain programming concepts clearly in a few words."},
-        {"role": "user", "content": "What are the advantages of pair programming?"}
-    ]
-)
-print(completion.choices[0].message.content) 
