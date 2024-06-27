@@ -23,7 +23,7 @@ jobs:
         pip install praw openai python-binance
         pip install -r requirements.txt
     - name: Run style checker
-      run: python style_checker.py
+      run: python3 style_checker.py
     - name: Run tests
       run: |
-        python -m unittest discover
+        python3 -m unittest discover
