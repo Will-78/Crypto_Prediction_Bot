@@ -29,7 +29,7 @@ async def getPrediction():
     # store a record of this prediction
     await cache_prediction(crypto_id, decision)
 
-    print(f"\n{decision}\n")
+    print(f"\n{decision}\033[0m\n")
 
 
 async def retrieve_predictions():
@@ -49,7 +49,11 @@ async def retrieve_predictions():
         if len(timestamps) and len(responses):
             for time, response in zip(timestamps, responses):
                 print(
-                    f"\nOn {time} the prediction was {response} for {symbol}")
+                    f"\nOn \033[91m{time}\033[0m the prediction was {response} for {symbol}"
+                )
+                print(
+                    "========================================================================================================================================\n"
+                )
 
         else:
             print(f"\nError fetching prior predictions for {symbol}")
@@ -59,11 +63,11 @@ async def retrieve_predictions():
 
 
 def print_user_operations():
-    print("\n===========================")
+    print("\n\033[32m===========================")
     print("1) Request a prediction")
     print("2) View prior predictions")
-    print("3) Exit\n")
-    print("===========================\n")
+    print("3) Exit")
+    print("===========================\033[0m\n")
 
 
 # Main function
