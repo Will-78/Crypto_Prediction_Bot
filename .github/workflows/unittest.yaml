@@ -17,4 +17,4 @@ jobs:
 
       - name: Test with unittest
         working-directory: ./calculator
-        run: python3 -m unittest unittest.py
+        run: python3 -m unittest test_crypto_bot.py
