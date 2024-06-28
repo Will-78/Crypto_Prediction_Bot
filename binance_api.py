@@ -16,7 +16,8 @@ binance_secret_key = os.getenv("BINANCE_SECRET_KEY")
 
 
 def calculate_SimpleMovingAverage(prices, interval):
-    return sum(prices) / interval  # average of candlestick prices over a given interval
+    # average of candlestick prices over a given interval
+    return sum(prices) / interval
 
 
 def calculate_RelativeStrength(prices, period):

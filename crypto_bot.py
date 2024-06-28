@@ -48,7 +48,8 @@ async def retrieve_predictions():
 
         if len(timestamps) and len(responses):
             for time, response in zip(timestamps, responses):
-                print(f"\nOn {time} the prediction was {response} for {symbol}")
+                print(
+                    f"\nOn {time} the prediction was {response} for {symbol}")
 
         else:
             print(f"\nError fetching prior predictions for {symbol}")
