@@ -4,10 +4,11 @@ import os
 from binance import AsyncClient
 
 """
-Minimum factors required to make a prediction of a coin are : 
-- Intraday tick data, Moving Averages, Relative strength data, RSI, VWAP, and Order book snapshots
+Minimum factors required to make a prediction of a coin are :
+- Intraday tick data, Moving Averages, Relative strength data, 
+    RSI, VWAP, and Order book snapshots
 
-Other Predictors that can be added later for better predictions: 
+Other Predictors that can be added later for better predictions:
 - Historical Data, Fundamental Analysis, Sentiment Analysis, and Broader Market Data
 """
 
