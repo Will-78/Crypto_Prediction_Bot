@@ -17,6 +17,8 @@ def get_sentiment(text):
     return sentiment
 
 def make_decision(tick_data, sma, rs, rsi, vwap, book_order):
+
+    # task given to openai (system = behavior, user = request)
     completion = openai.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[

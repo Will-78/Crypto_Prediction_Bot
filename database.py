@@ -13,7 +13,7 @@ async def create_db():
     c.execute('''CREATE TABLE IF NOT EXISTS predictions
                 (
                     prediction_id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-                    crypto_id INTEGER UNIQUE,
+                    crypto_id INTEGER,
                     time_stamp TEXT DEFAULT CURRENT_TIMESTAMP,
                     response TEXT
                 )''')
@@ -27,8 +27,6 @@ async def create_db():
     conn.commit()
     conn.close()
 
-    print("success")
-
 async def insert_post(post_id, title, sentiment):
     conn = sqlite3.connect('crypto_trading.db')
     c = conn.cursor()
@@ -40,7 +38,8 @@ async def insert_post(post_id, title, sentiment):
 async def cache_prediction(crypto_id, response):
     conn = sqlite3.connect('crypto_trading.db')
     c = conn.cursor()
-    c.excute("INSERT INTO predictions(crypto_id, response) VALUES(?, ?)",
+
+    c.execute("INSERT INTO predictions(crypto_id, response) VALUES(?, ?)",
              (crypto_id, response))
     conn.commit()
     conn.close()
@@ -49,29 +48,38 @@ async def insert_currency(symbol):
     conn = sqlite3.connect('crypto_trading.db')
     c = conn.cursor()
     c.execute("INSERT INTO currencies(symbol) VALUES(?)",
-              (symbol))
-    c.commit()
+              (symbol,))
+    conn.commit()
     conn.close()
 
 async def fetch_currency(symbol):
-    conn = sqlite3.connect('crypto-trading.db')
+    conn = sqlite3.connect('crypto_trading.db')
     c = conn.cursor()
     c.execute("SELECT crypto_id FROM currencies WHERE symbol = ?", (symbol,))
 
-    crypto_id = c.fetchOne()
+    crypto_id = c.fetchone() # it returns a tuple
+
+    if crypto_id:
+        crypto_id=crypto_id[0] 
 
     conn.close()
     return crypto_id
 
 async def fetch_prediction(crypto_id):
-    conn = sqlite3.connect('crypto-trading.db')
+    conn = sqlite3.connect('crypto_trading.db')
     c = conn.cursor()
     c.execute('''SELECT time_stamp, response
                  FROM predictions
                  WHERE crypto_id = ? ''',
                  (crypto_id,))
-    
-    timestamps, responses = c.fetchall()
+    data = c.fetchall()
+    timestamps, responses = [], []
+
+    if data:
+
+        for analysis in data:
+            timestamps.append(analysis[0])
+            responses.append(analysis[1])
 
     conn.close()
     return timestamps, responses
