@@ -11,10 +11,11 @@ from gptapi import make_decision
 
 
 async def getPrediction():
-    symbol = (
-        str(input("\nEnter the currency symbol you would like an opinion on: "))
-        + "USDT"
-    )  # assuming USDT pair for simplicity
+    symbol = str(
+        input("\nEnter the currency symbol you would like an opinion on: ")
+    ).upper()
+
+    symbol += "USDT"  # assuming USDT pair for simplicity
 
     # obtain the id associated with the coin else create a record of it
     crypto_id = await fetch_currency(symbol)
@@ -23,20 +24,27 @@ async def getPrediction():
         crypto_id = await fetch_currency(symbol)
 
     # Make call to binacne for relevant information to then make a decision with openai
-    tick_data, sma, rs, rsi, vwap, book_order = await get_info(symbol)
-    decision = make_decision(tick_data, sma, rs, rsi, vwap, book_order)
+    try:
+        tick_data, sma, rs, rsi, vwap, book_order = await get_info(symbol)
 
-    # store a record of this prediction
-    await cache_prediction(crypto_id, decision)
+    except:
+        print("\n\033[91mInvalid Crypto symbol entered\033[0m\n")
 
-    print(f"\n{decision}\033[0m\n")
+    else:
+        decision = make_decision(tick_data, sma, rs, rsi, vwap, book_order)
+
+        # store a record of this prediction
+        await cache_prediction(crypto_id, decision)
+
+        print(f"\n{decision}\033[0m\n")
 
 
 async def retrieve_predictions():
-    symbol = (
-        str(input("\nEnter the currency symbol you would like an opinion on: "))
-        + "USDT"
-    )  # assuming USDT pair for simplicity
+    symbol = str(
+        input("\nEnter the currency symbol you would like an opinion on: ")
+    ).upper()
+
+    symbol += "USDT"  # assuming USDT pair for simplicity
 
     # attempt to get coin id else is has not beeen recorded yet
     crypto_id = await fetch_currency(symbol)
@@ -64,8 +72,8 @@ async def retrieve_predictions():
 
 def print_user_operations():
     print("\n\033[32m===========================")
-    print("1) Request a prediction")
-    print("2) View prior predictions")
+    print("1) Request a analysis")
+    print("2) View past analyses")
     print("3) Exit")
     print("===========================\033[0m\n")
 

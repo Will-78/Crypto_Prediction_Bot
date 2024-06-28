@@ -77,24 +77,31 @@ async def get_info(symbol):
         binance_secret_key, binace_api_key, tld="us"
     )  # all async commands require await (must be in async function)
 
-    tick_data = await client.get_ticker(symbol=symbol)  # 24-hour period
-    candlesticks = await client.get_klines(symbol=symbol, interval="1h")
-    order_book = await client.get_order_book(symbol=symbol)
+    try:
+        tick_data = await client.get_ticker(symbol=symbol)  # 24-hour period
+        candlesticks = await client.get_klines(symbol=symbol, interval="1h")
+        order_book = await client.get_order_book(symbol=symbol)
 
-    # extract data from the candlesticks
-    prices = []
-    volume = []
-    quote_volume = []
-    for candle in candlesticks:
-        prices.append(float(candle[4]))
-        volume.append(float(candle[5]))
-        quote_volume.append(float(candle[7]))
+    except:
 
-    # calculate necessary factors that cannot be retrieved via API
-    sma = calculate_SimpleMovingAverage(prices, 60)
-    rsi, rs = calculate_RelativeStrength(prices, 14)
-    vwap = calculate_VolumeWeightedAveragePrice(quote_volume, volume)
+        await client.close_connection()
+        return
+    else:
 
-    await client.close_connection()
+        # extract data from the candlesticks
+        prices = []
+        volume = []
+        quote_volume = []
+        for candle in candlesticks:
+            prices.append(float(candle[4]))
+            volume.append(float(candle[5]))
+            quote_volume.append(float(candle[7]))
 
-    return tick_data, sma, rs, rsi, vwap, order_book
+        # calculate necessary factors that cannot be retrieved via API
+        sma = calculate_SimpleMovingAverage(prices, 60)
+        rsi, rs = calculate_RelativeStrength(prices, 14)
+        vwap = calculate_VolumeWeightedAveragePrice(quote_volume, volume)
+
+        await client.close_connection()
+
+        return tick_data, sma, rs, rsi, vwap, order_book
