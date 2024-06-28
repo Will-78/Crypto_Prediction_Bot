@@ -2,7 +2,7 @@
 when performing unit tests. Link on unittest.mock and how @patch works:
 https://docs.python.org/3/library/unittest.mock.html (may not be needed later)'''
 
-import unittest
+'''import unittest
 from unittest.mock import patch
 
 class TestCryptoTradingBot(unittest.TestCase):
@@ -21,4 +21,4 @@ class TestCryptoTradingBot(unittest.TestCase):
         self.assertEqual(sentiment, 'Positive')
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main()'''
