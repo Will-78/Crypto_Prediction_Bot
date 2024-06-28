@@ -22,7 +22,7 @@ jobs:
 
       - name: Test with unittest
         working-directory: ./calculator
-        run: python3 -m unittest Crypto-Bot.py
+        run: python3 -m unittest CryptoBot.py
 
   check-style:
     needs: setup
